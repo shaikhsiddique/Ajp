@@ -1,0 +1,60 @@
+/*
+ * ChatServer: A simple chat server that listens for connections from clients.
+ * <applet code="ChatServer.class" width="400" height="300"></applet>
+ */
+
+ import java.io.*;
+ import java.net.*;
+ 
+ public class ChatServer {
+     public static void main(String[] args) {
+         try (ServerSocket serverSocket = new ServerSocket(1234)) {
+             System.out.println("Server is waiting for connection...");
+             try (Socket socket = serverSocket.accept();
+                  BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                  PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+                  BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in))) {
+                 System.out.println("Client connected.");
+                 String clientMessage, serverMessage;
+                 while (true) {
+                     clientMessage = input.readLine();
+                     if (clientMessage == null || clientMessage.equalsIgnoreCase("exit")) break;
+                     System.out.println("Client: " + clientMessage);
+                     serverMessage = keyboard.readLine();
+                     output.println(serverMessage);
+                 }
+             }
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+     }
+ }
+
+ /*<applet code="ChatServer.class" width="400" height="300"></applet>*/
+
+
+ import java.io.*;
+import java.net.*;
+
+public class ChatClient {
+    public static void main(String[] args) {
+        try (Socket socket = new Socket("localhost", 1234);
+             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in))) {
+            System.out.println("Connected to the server.");
+            String clientMessage, serverMessage;
+            while (true) {
+                clientMessage = keyboard.readLine();
+                output.println(clientMessage);
+                if (clientMessage.equalsIgnoreCase("exit")) break;
+                serverMessage = input.readLine();
+                System.out.println("Server: " + serverMessage);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+/*<applet code="ChatClient.class" width="400" height="300"></applet>*/
